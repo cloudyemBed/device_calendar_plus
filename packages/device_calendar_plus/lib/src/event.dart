@@ -67,6 +67,10 @@ class Event {
   /// Null for all-day events (floating dates).
   final String? timeZone;
 
+/// Last date of the event being modified via sync, in-app update or third-party update
+/// Does not update on reads of event
+  final DateTime? lastModifiedDate;
+  
   /// Whether this is a recurring event.
   /// True for recurring events, false for one-time events.
   final bool isRecurring;
@@ -124,6 +128,7 @@ class Event {
     required this.availability,
     required this.status,
     this.timeZone,
+    this.lastModifiedDate,
     required this.isRecurring,
     this.recurrenceRule,
     this.attendees,
@@ -137,6 +142,8 @@ class Event {
     final rruleString = map['recurrenceRule'] as String?;
     final attendeesList = map['attendees'] as List<dynamic>?;
     final remindersList = map['reminders'] as List<dynamic>?;
+    final lastModifiedMs = map['lastModifiedDate'] as int?;
+    
     return Event(
       eventId: map['eventId'] as String,
       instanceId: map['instanceId'] as String,
@@ -150,6 +157,9 @@ class Event {
       availability: EventAvailability.fromName(map['availability'] as String),
       status: EventStatus.fromName(map['status'] as String),
       timeZone: map['timeZone'] as String?,
+      lastModifiedDate: lastModifiedMs != null
+        ? DateTime.fromMillisecondsSinceEpoch(lastModifiedMs)
+        : null,
       isRecurring: map['isRecurring'] as bool? ?? false,
       recurrenceRule: rruleString != null
           ? RecurrenceRule.fromRruleString(rruleString)
@@ -183,6 +193,9 @@ class Event {
     if (description != null) map['description'] = description;
     if (location != null) map['location'] = location;
     if (timeZone != null) map['timeZone'] = timeZone;
+    if (lastModifiedDate != null) {
+      map['lastModifiedDate'] = lastModifiedDate!.millisecondsSinceEpoch;
+    }
     if (url != null) map['url'] = url;
     if (colorHex != null) map['colorHex'] = colorHex;
     if (recurrenceRule != null) {
@@ -222,6 +235,7 @@ class Event {
         other.availability == availability &&
         other.status == status &&
         other.timeZone == timeZone &&
+        other.lastModifiedDate == lastModifiedDate &&
         other.isRecurring == isRecurring &&
         other.recurrenceRule == recurrenceRule &&
         listEquals(other.attendees, attendees) &&
@@ -245,6 +259,7 @@ class Event {
       availability,
       status,
       timeZone,
+      lastModifiedDate,
       isRecurring,
       recurrenceRule,
       attendees != null ? Object.hashAll(attendees!) : null,
