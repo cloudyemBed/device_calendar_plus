@@ -177,6 +177,7 @@ class EventsService(
         val availabilityIndex = cursor.getColumnIndexOrThrow(columns.availability)
         val statusIndex = cursor.getColumnIndexOrThrow(columns.status)
         val timeZoneIndex = cursor.getColumnIndexOrThrow(columns.timeZone)
+        val lastModifiedIndex = cursor.getColumnIndexOrThrow(columns.lastModified)
         val recurrenceRuleIndex = cursor.getColumnIndexOrThrow(columns.recurrenceRule)
         val urlIndex = cursor.getColumnIndexOrThrow(columns.url)
         val eventColorIndex = cursor.getColumnIndexOrThrow(columns.eventColor)
@@ -200,6 +201,7 @@ class EventsService(
         val availability = if (!cursor.isNull(availabilityIndex)) cursor.getInt(availabilityIndex) else null
         val status = if (!cursor.isNull(statusIndex)) cursor.getInt(statusIndex) else null
         val timeZone = if (!cursor.isNull(timeZoneIndex)) cursor.getString(timeZoneIndex) else null
+        val lastModified = if (!cursor.isNull(lastModifiedIndex)) cursor.getLong(lastModifiedIndex) else null
         val recurrenceRule = if (!cursor.isNull(recurrenceRuleIndex)) cursor.getString(recurrenceRuleIndex) else null
         val url = if (!cursor.isNull(urlIndex)) cursor.getString(urlIndex) else null
         val eventColor = if (!cursor.isNull(eventColorIndex)) cursor.getInt(eventColorIndex) else null
@@ -242,6 +244,11 @@ class EventsService(
         // Add timezone for timed events only
         if (!allDay && timeZone != null) {
             eventMap["timeZone"] = timeZone
+        }
+
+        // Add lastModifiedDate if available
+        if (lastModified != null) {
+            eventMap["lastModifiedDate"] = lastModified
         }
         
         // Set isRecurring flag and raw RRULE string
