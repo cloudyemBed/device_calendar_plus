@@ -192,6 +192,11 @@ class EventsService {
     
     eventMap["startDate"] = Int64(startDate.timeIntervalSince1970 * 1000)
     eventMap["endDate"] = Int64(endDate.timeIntervalSince1970 * 1000)
+
+    // ADD THIS:
+    if let lastModifiedDate = event.lastModifiedDate {
+      eventMap["lastModifiedDate"] = Int64(lastModifiedDate.timeIntervalSince1970 * 1000)
+    }
     
     // Map availability and status to strings
     eventMap["availability"] = event.availability.stringValue
